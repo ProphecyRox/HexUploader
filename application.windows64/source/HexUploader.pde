@@ -89,6 +89,11 @@ void USBConnect(){
 }
 
 void Upload(){
+  UploadInner();
+  serialMonitor = true;      //
+}
+
+void UploadInner(){
   
   if(!connected){
     console("Select valid port first!");
