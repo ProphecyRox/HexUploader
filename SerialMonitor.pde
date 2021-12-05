@@ -76,6 +76,9 @@ void tx(){
     WriteBytes(out2);
 }
 
+String buffer = "";
+boolean readyToPrintLn = false;
+
 void rx(){
   if(serial.available() > 0){
       int inByte = serial.read();
@@ -83,7 +86,13 @@ void rx(){
       
       switch (monitorMode){
         case 1: 
-          out = str(char(inByte));
+          // Did we finish reading the line?
+          if(char(inByte) == '\n'){
+            readyToPrintLn = true;
+          }else{
+            // Store line incrementally
+            buffer += str(char(inByte));
+          }
           break;
         case 2:
           out = str(inByte);
@@ -103,7 +112,16 @@ void rx(){
       if(monitorMode == 3){
         out = "0x" + out;
       }
-      
-      monitor(out);
+            
+      if(monitorMode == 1){
+        if(readyToPrintLn){
+          // Print line to monitor
+          monitor(buffer);
+          buffer = "";
+          readyToPrintLn = false;
+        }
+      }else{
+        monitor(out);
+      }
     }
 }
